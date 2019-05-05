@@ -1,4 +1,4 @@
-package hydra;
+package com.github.admarc;
 
 import java.util.Arrays;
 
