@@ -16,6 +16,8 @@ public class HelloStepDefinitions extends CucumberStepDefinitions {
     public void i_want_to_see_hello_message() {
         ResponseEntity<String> response = getResponse();
         assert response.getStatusCode() == HttpStatus.OK;
+        System.out.println(response.getBody());
+        System.out.println("aaaaaaaaaaaaaaa");
         assert response.getBody().equals("Greetings from Spring Boot!") == true;
     }
 }
