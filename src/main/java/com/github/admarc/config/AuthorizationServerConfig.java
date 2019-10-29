@@ -1,6 +1,5 @@
 package com.github.admarc.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +18,10 @@ import java.util.Arrays;
 @Configuration
 @EnableAuthorizationServer
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
+	private JwtAccessTokenConverter accessTokenConverter;
+	private PasswordEncoder passwordEncoder;
+	private TokenStore tokenStore;
+	private AuthenticationManager authenticationManager;
 
 	@Value("${security.jwt.client-id}")
 	private String clientId;
@@ -38,18 +41,17 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 	@Value("${security.jwt.resource-ids}")
 	private String resourceIds;
 
-	@Autowired
-	private TokenStore tokenStore;
-
-	@Autowired
-	private JwtAccessTokenConverter accessTokenConverter;
-
-	@Autowired
-	@Qualifier("authenticationManagerBean")
-	private AuthenticationManager authenticationManager;
-
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+	AuthorizationServerConfig(
+			@Qualifier("authenticationManagerBean") AuthenticationManager authenticationManager,
+			JwtAccessTokenConverter accessTokenConverter,
+			PasswordEncoder passwordEncoder,
+			TokenStore tokenStore
+	) {
+		this.authenticationManager = authenticationManager;
+		this.accessTokenConverter = accessTokenConverter;
+		this.passwordEncoder = passwordEncoder;
+		this.tokenStore = tokenStore;
+	}
 
 	@Override
 	public void configure(ClientDetailsServiceConfigurer configurer) throws Exception {
@@ -71,5 +73,4 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 		        .tokenEnhancer(enhancerChain)
 		        .authenticationManager(authenticationManager);
 	}
-
 }

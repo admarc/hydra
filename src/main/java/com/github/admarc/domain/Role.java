@@ -2,11 +2,8 @@ package com.github.admarc.domain;
 
 import javax.persistence.*;
 
-/**
- * Created by nydiarra on 06/05/17.
- */
 @Entity
-@Table(name="app_role")
+@Table(name="roles")
 public class Role {
     private static final long serialVersionUID = 1L;
     @Id
@@ -14,7 +11,7 @@ public class Role {
     private Long id;
 
     @Column(name="role_name")
-    private String roleName;
+    private String name;
 
     @Column(name="description")
     private String description;
@@ -24,16 +21,12 @@ public class Role {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public String getName() {
+        return name;
     }
 
-    public String getRoleName() {
-        return roleName;
-    }
-
-    public void setRoleName(String roleName) {
-        this.roleName = roleName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDescription() {

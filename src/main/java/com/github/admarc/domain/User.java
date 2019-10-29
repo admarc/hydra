@@ -1,88 +1,81 @@
 package com.github.admarc.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.github.admarc.validator.UniqueProperty;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
-/**
- * Created by nydiarra on 06/05/17.
- */
+
 @Entity
-@Table(name = "app_user")
+@Table(name = "users")
+@UniqueProperty.List(value = { @UniqueProperty(name = "email"), @UniqueProperty(name = "username") })
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "email", unique = true)
+    @NotBlank
+    @Email
+    private String email;
+
     @Column(name = "username")
+    @NotBlank
     private String username;
 
     @Column(name = "password")
-    @JsonIgnore
+    @NotBlank
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    @Column(name = "first_name")
-    private String firstName;
-
-    @Column(name = "last_name")
-    private String lastName;
-
-    /**
-     * Roles are being eagerly loaded here because
-     * they are a fairly small collection of items for this example.
-     */
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_role", joinColumns
+    @JoinTable(name = "user_roles", joinColumns
             = @JoinColumn(name = "user_id",
             referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id",
                     referencedColumnName = "id"))
     private List<Role> roles;
 
-    public Long getId() {
-        return id;
+    public User() {}
+
+    public User(
+            String email,
+            String username,
+            String password
+    ) {
+        this.email = email;
+        this.username = username;
+        this.password = password;
+        this.roles = roles;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Long getId() {
+        return id;
     }
 
     public String getUsername() {
         return username;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public String getEmail() {
+        return email;
     }
 
     public String getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
     public List<Role> getRoles() {
         return roles;
+    }
+
+    public User setPassword(String password) {
+        this.password = password;
+        return this;
     }
 
     public void setRoles(List<Role> roles) {

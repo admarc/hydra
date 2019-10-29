@@ -21,9 +21,9 @@ import java.beans.PropertyVetoException;
 
 @Configuration
 @EnableTransactionManagement
+@Profile("test")
 @EnableJpaRepositories(basePackages = "com.github.admarc.repository")
 public class DatasourceConfig {
-
     @Bean
     public DataSource datasource() throws PropertyVetoException {
         EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
@@ -32,7 +32,6 @@ public class DatasourceConfig {
                 .addScript("sql-scripts/schema.sql")
                 .addScript("sql-scripts/data.sql")
                 .build();
-
         return dataSource;
     }
 
