@@ -3,6 +3,9 @@ package com.github.admarc.steps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import static com.tngtech.keycloakmock.api.ServerConfig.aServerConfig;
+import static com.tngtech.keycloakmock.api.TokenConfig.aTokenConfig;
+import com.tngtech.keycloakmock.api.KeycloakMock;
 import cucumber.api.Scenario;
 import cucumber.api.java.After;
 import cucumber.api.java.en.Given;
@@ -14,6 +17,7 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.server.LocalServerPort;
 
 import static org.hamcrest.Matchers.*;
@@ -23,21 +27,26 @@ public class RequestStepDefinitions {
     public static final String ANSI_PURPLE = "\u001B[35m";
     public static final String ANSI_RESET = "\u001B[0m";
 
-    @LocalServerPort
-    protected int port;
-
     private DatabaseStepDefinitions databaseStepDefinitions;
 
     public static final String url = "http://localhost";
+    @Value( "${keycloak.resource}" )
+    private String resource;
 
     private RequestSpecification request;
     private JSONObject requestParams;
     private Response response;
 
+    static KeycloakMock mock = new KeycloakMock(aServerConfig().withPort(8080).withHostname("keycloak").withRealm("hydra").build());
+
     RequestStepDefinitions(DatabaseStepDefinitions databaseStepDefinitions) {
         this.databaseStepDefinitions = databaseStepDefinitions;
         request = RestAssured.given().contentType("application/json\r\n");
         requestParams = new JSONObject();
+    }
+
+    static {
+        mock.start();
     }
 
     private String getUrl() {
@@ -89,11 +98,6 @@ public class RequestStepDefinitions {
         assert(errorObject.get("code").toString().replaceAll("\"", "").equals(errorMessage));
     }
 
-    @When("I try to fetch {string} profile")
-    public void i_try_to_fetch_profile(String string) {
-        response = request.when().get(getUrl() + "users/" + databaseStepDefinitions.users.get(string).getId());
-    }
-
     @Then("there should be {string} in the response with value {string}")
     public void there_should_be_in_the_response_with_value(String key, String value) {
         response.then().body(key, equalTo(value));
@@ -132,11 +136,30 @@ public class RequestStepDefinitions {
     }
 
     @After
-    public void embedScreenshotOnFail(Scenario scenario) {
+    public void dumpResponseOnFail(Scenario scenario) {
         if (scenario.isFailed()) {
             System.out.println(ANSI_PURPLE + "======================== RESPONSE ========================" + ANSI_RESET);
+            System.out.println("Response status code: " + response.statusCode());
             response.getBody().prettyPrint();
             System.out.println(ANSI_PURPLE + "==================== END OF RESPONSE =====================" + ANSI_RESET);
         }
     }
+
+    @Given("I'm authenticated with role {string}")
+    public void i_m_authenticated_with_role(String roleName) {
+        request.auth()
+                .preemptive()
+                .oauth2(mock.getAccessToken(aTokenConfig().withResourceRole(resource, roleName).build()));
+    }
+
+    @LocalServerPort private int port;
+
+
+    @When("I test")
+    public void i_test() {
+        response = request
+                .when()
+                .get(getUrl() + "api/vip");
+    }
+
 }

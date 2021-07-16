@@ -1,10 +1,1 @@
-INSERT INTO roles (id, role_name, description) VALUES (1, 'STANDARD_USER', 'Standard User - Has no admin rights');
-INSERT INTO roles (id, role_name, description) VALUES (2, 'ADMIN_USER', 'Admin User - Has permission to perform admin tasks');
-
-INSERT INTO users (id, first_name, last_name, password, username) VALUES (1, 'John', 'Doe', '$2a$10$qtH0F1m488673KwgAfFXEOWxsoZSeHqqlB/8BTt3a6gsI5c2mdlfe', 'john.doe');
-INSERT INTO users (id, first_name, last_name, password, username) VALUES (2, 'Admin', 'Admin', '$2a$10$qtH0F1m488673KwgAfFXEOWxsoZSeHqqlB/8BTt3a6gsI5c2mdlfe', 'admin.admin');
-
-
-INSERT INTO user_roles(user_id, role_id) VALUES(1,1);
-INSERT INTO user_roles(user_id, role_id) VALUES(2,1);
-INSERT INTO user_roles(user_id, role_id) VALUES(2,2);
+INSERT INTO tournaments (id, name, start_at, end_at) VALUES ('cf8a58f2-2304-4316-83d0-7fda62c5f410', 'world cup', '2020-12-12 12:12:12','2020-12-12 12:12:12');
