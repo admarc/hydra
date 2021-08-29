@@ -53,17 +53,6 @@ public class RequestStepDefinitions {
         return url + ":" + this.port + "/";
     }
 
-    @When("I try to create an account")
-    public void i_try_to_create_an_account() {
-        makeRequest(Method.POST, "users");
-    }
-
-    @When("I try to log in")
-    public void i_try_to_log_in() throws JSONException {
-        requestParams.put("grant_type", "password");
-        makeRequest(Method.POST, "signin");
-    }
-
     private void makeRequest(Method method, String url) {
         if(requestParams.length() != 0) {
             request.body(requestParams.toString());
@@ -71,6 +60,12 @@ public class RequestStepDefinitions {
 
         response = request.when().request(method, getUrl() + url);
     }
+
+    @When("I try to create a tournament")
+    public void i_try_to_create_a_tournament() {
+        makeRequest(Method.POST, "tournaments");
+    }
+
 
     @Given("I provide {string} with value {string}")
     public void i_provide_with_value(String key, String value) throws JSONException {
